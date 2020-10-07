@@ -97,23 +97,28 @@ def run_experiment():
     """
     Step by step script for the experiment
     """
+    #pylint: disable=import-outside-toplevel
+    import app.psyparticipant as psyp
+    #pylint: enable=import-outside-toplevel
+
+    # Ask for participant ID
+    participant = psyp.display_participant_dialogue()
 
     # Prepare psychopy
     psypy = setup()
     # Get the participants condition
     condition = get_condition()
-    # Ask for participant ID
-    participant = psypy.display_participant_dialogue()
     # Show instructions
     psypy.display_text_message(config.exp.MESSAGES.get('instructions'))
     # Run practice experiment
     psypy.display_text_sequence(config.story.TEXT.get('practice'))
     # Get ready
+    psypy.display_text_message(config.exp.MESSAGES.get('continue'))
     psypy.display_text_message(config.exp.MESSAGES.get('post_practice'))
     # Run experiment and get time per displayed word
     timing_data = psypy.display_text_sequence(condition.get('story'))
     # We can't accept input until the data saves
-    psypy.display_text_message('Please wait...', wait = False)
+    psypy.display_text_message(config.exp.MESSAGES.get('wait'), wait = False)
     # Save the data
     write_experiment_data(timing_data, participant, condition)
     # Byeeeeeeeee

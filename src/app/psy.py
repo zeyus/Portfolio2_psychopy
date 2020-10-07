@@ -2,7 +2,7 @@
 Psychopy middleware. Provides display / stimulus functionality for the experiment.
 """
 
-from psychopy import visual, event, monitors, core, gui, data
+from psychopy import visual, event, monitors, core, data
 
 class Psypy:
     """
@@ -58,16 +58,17 @@ class Psypy:
         """
 
         return visual.Window(
-            size=self.conf.get('winSize'),
+            size=self.conf.get('windowSize'),
             fullscr=self.conf.get('fullScreen'),
-            monitor=self.mon)
+            monitor=self.mon,
+            color=self.conf.get('windowColor'))
 
     def display_text_message(self, txt: str, wait: bool = True) -> None:
         """
         Display psychopy message / instructions
         """
 
-        msg = visual.TextStim(self.win, text=txt.strip())
+        msg = visual.TextStim(self.win, text=txt.strip(), color=self.conf.get('textColor'))
         msg.draw()
         self.win.flip()
         if wait:
@@ -89,7 +90,7 @@ class Psypy:
             if word == '':
                 continue
             # Prepare the word display
-            msg = visual.TextStim(self.win, text=word)
+            msg = visual.TextStim(self.win, text=word, color=self.conf.get('textColor'))
             msg.draw()
             # Show the word
             self.win.flip()
@@ -106,17 +107,3 @@ class Psypy:
             })
             sequence += 1
         return sequence_data
-
-    def display_participant_dialogue(self) -> list:
-        """
-        Show participant information dialogue box
-        """
-
-        # Standard psychopy dialogue box
-        dlg = gui.Dlg(title="Please enter participant information")
-        dlg.addField(label='ID')
-        participant = dlg.show()
-        # Do not continue if no ID is entered
-        if participant is None:
-            core.quit()
-        return participant
