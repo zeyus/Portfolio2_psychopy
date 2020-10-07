@@ -1,4 +1,7 @@
-"""Main word-by-word experiment script"""
+"""
+Main word-by-word experiment script
+"""
+
 import sys
 import os
 import glob
@@ -15,7 +18,10 @@ import config
 #pylint: enable=wrong-import-position
 
 def setup():
-    """Prepare psychopy environment and settings"""
+    """
+    Prepare psychopy environment and settings
+    """
+
     #pylint: disable=import-outside-toplevel
     from psychopy import prefs
     #pylint: enable=import-outside-toplevel
@@ -26,23 +32,35 @@ def setup():
     #pylint: disable=import-outside-toplevel
     import app.psy as psy
     #pylint: enable=import-outside-toplevel
+
     # Ensure data directory exists and is writeable
     if not os.path.exists(config.data.DATA_PATH):
         try:
             os.mkdir(config.data.DATA_PATH)
-        except Exception:
-            raise SystemError('Cannot write to {}'.format(os.path.abspath(config.data.DATA_PATH)))       
+        except Exception as ex:
+            raise SystemError(
+                'Cannot write to {}'.format(os.path.abspath(config.data.DATA_PATH))) from ex
     return psy.Psypy(config.psy.PREFS)
 
 def get_condition() -> dict:
-    experimental_results = len(glob.glob(config.data.DATA_PATH + os.path.sep + '*_experimental.csv'))
-    control_results = len(glob.glob(config.data.DATA_PATH + os.path.sep + '*_control.csv'))
+    """
+    Choose the condition for the next participant.
+    """
+
+    # Get number of participants so far in each condition
+    experimental_results = len(glob.glob(
+        config.data.DATA_PATH + os.path.sep + '*_experimental.csv'))
+    control_results = len(glob.glob(
+        config.data.DATA_PATH + os.path.sep + '*_control.csv'))
+
+    # Try to balance the numbers, but if they're already balanced, randonly select one
     if experimental_results == control_results:
         condition = random.choice(('control', 'experimental'))
     elif experimental_results < control_results:
         condition = 'experimental'
     else:
         condition = 'experimental'
+    # Return the condition, with the completed story text
     return {
         'condition': condition,
         'story': config.story.TEXT.get('main').format(cond_word = config.exp.CONDS.get(condition))
@@ -50,37 +68,53 @@ def get_condition() -> dict:
 
 
 def write_experiment_data(timing_data: dict, participant: list, condition: str):
+    """
+    Save the experimental results
+    """
+
+    # Prepare dataframe using configured columns
     d_f = pd.DataFrame(columns=config.data.COLS)
+
+    # Loop through the results for this participant
     for row in timing_data:
         d_f = d_f.append({
-            # Timestamp YYYY-MM-DD HH:MM:SS
             'timestamp': row.get('timestamp'),
-            # Participant ID
             'id': participant[0],
-            # Current word
             'word': row.get('word'),
-            # Display time
             'time': row.get('time'),
-            # Which condition: (control, experimental)
             'condition': condition.get('condition'),
-            # Integer: The nth word displayed of the story
             'sequence': row.get('sequence'),
         }, ignore_index = True)
+    # Write the data to a csv file in the data directory
     d_f.to_csv(
         config.data.DATA_PATH + os.path.sep +
-        config.data.LOG_FORMAT.format(timestamp = time.strftime('%Y-%m-%d %H_%M_%S'), id=participant[0], condition=condition.get('condition')))
+        config.data.LOG_FORMAT.format(
+            timestamp = time.strftime('%Y-%m-%d %H_%M_%S'),
+            id=participant[0],
+            condition=condition.get('condition')))
 
 def run_experiment():
     """
     Step by step script for the experiment
     """
+
+    # Prepare psychopy
     psypy = setup()
+    # Get the participants condition
     condition = get_condition()
+    # Ask for participant ID
     participant = psypy.display_participant_dialogue()
+    # Show instructions
     psypy.display_text_message(config.exp.MESSAGES.get('instructions'))
+    # Run practice experiment
     psypy.display_text_sequence(config.story.TEXT.get('practice'))
+    # Get ready
     psypy.display_text_message(config.exp.MESSAGES.get('post_practice'))
+    # Run experiment and get time per displayed word
     timing_data = psypy.display_text_sequence(condition.get('story'))
+    # We can't accept input until the data saves
     psypy.display_text_message('Please wait...', wait = False)
+    # Save the data
     write_experiment_data(timing_data, participant, condition)
+    # Byeeeeeeeee
     psypy.display_text_message(config.exp.MESSAGES.get('complete'))

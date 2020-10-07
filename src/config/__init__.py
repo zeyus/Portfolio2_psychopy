@@ -1,2 +1,4 @@
-# Load configuration for the psychopy experiment
-from . import data as data, experiment as exp, story as story, psy as psy
+"""
+All configuration for the experiment, including psychopy config
+"""
+from . import data, experiment as exp, story, psy
