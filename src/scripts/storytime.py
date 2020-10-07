@@ -59,7 +59,7 @@ def get_condition() -> dict:
     elif experimental_results < control_results:
         condition = 'experimental'
     else:
-        condition = 'experimental'
+        condition = 'control'
     # Return the condition, with the completed story text
     return {
         'condition': condition,
