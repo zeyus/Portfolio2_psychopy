@@ -1,5 +1,9 @@
-# Load story experiment
-from src.storytime import run_experiment
+"""
+Wrapper to run psychopy experiment.
+"""
+# import os
+# import atexit
+from src.scripts import storytime
 
 # Run the experiment
-run_experiment()
+storytime.run_experiment()

@@ -13,7 +13,7 @@ TEXT = {
     the spoon a neatly wrapped anniversary gift. It was tickets to Paris,
     and the spoon was {cond_word} and felt excited that they were finally
     going to see the beautiful city together. They kissed and went home to watch a movie.
-    """
+    """,
 }
 
 
