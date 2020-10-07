@@ -89,7 +89,7 @@ def write_experiment_data(timing_data: dict, participant: list, condition: str):
     d_f.to_csv(
         config.data.DATA_PATH + os.path.sep +
         config.data.LOG_FORMAT.format(
-            timestamp = time.strftime('%Y-%m-%d %H_%M_%S'),
+            timestamp = time.strftime('%Y-%m-%d_%H_%M_%S'),
             id=participant[0],
             condition=condition.get('condition')))
 
