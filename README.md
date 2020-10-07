@@ -23,7 +23,8 @@ From project root directry, run `python experiment.py`
 
 ## Data
 
-Data is stored by default in `./data` and the default format is:
+Data is stored by default as csv files in `./data` and the default column layout is:
+
 ```python
 # Data columns
 COLS = [
