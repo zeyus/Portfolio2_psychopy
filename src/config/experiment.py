@@ -16,4 +16,8 @@ MESSAGES = {
   'post_practice' : """
     The practice sentence has been completed. Once you are ready, press space to begin the experiment.
     """,
+  'complete': """
+    The experiment is over. Thank you for your participation! Press escape to exit.
+    Have a wonderful day 😊
+    """
 }

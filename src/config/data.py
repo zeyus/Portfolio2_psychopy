@@ -1,5 +1,9 @@
+"""
+Configuration for data
+"""
 # Where to save the participant data
-DATA_PATH = '../data'
+DATA_PATH = './data'
+LOG_FORMAT = 'logfile_{timestamp}_{id}_{condition}.csv'
 
 # Data columns
 COLS = [

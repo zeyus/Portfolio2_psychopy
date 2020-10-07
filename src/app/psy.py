@@ -1,14 +1,15 @@
 """
 Psychopy middleware. Provides display / stimulus functionality for the experiment.
 """
-from psychopy import visual, event, monitors
+from psychopy import visual, event, monitors, core, gui, data
+import locale
 
 class Psypy:
     """Wrapper class for reusable psychopy activities"""
     conf: dict
     mon: monitors.Monitor
     win: visual.Window
-    wait_keys: list = ['space']
+    wait_keys: list = ['space', 'escape']
 
     def __init__(self, conf: dict) -> None:
         self.conf = conf
@@ -21,6 +22,12 @@ class Psypy:
         mon.setSizePix(self.conf.get('winSize'))
         mon.setWidth(self.conf.get('monitorWidth'))
         return mon
+    
+    def wait_for_key(self) -> list:
+        key = event.waitKeys(keyList=self.wait_keys)
+        if('escape' in key):
+            core.quit()
+        return key
 
     def get_window(self) -> visual.Window:
         """Return a window for drawing stimuli"""
@@ -28,17 +35,41 @@ class Psypy:
 
     def display_text_message(self, txt: str, wait: bool = True) -> None:
         """Display message / instructions"""
-        msg = visual.TextStim(self.win, text=txt)
+        msg = visual.TextStim(self.win, text=txt.strip())
         msg.draw()
         self.win.flip()
         if wait:
-            event.waitKeys(keyList=self.wait_keys)
+            self.wait_for_key()
 
-    def display_text_sequence(self, txt: str) -> dict:
+    def display_text_sequence(self, txt: str) -> list:
         """Display word by word text sequence"""
-        for word in txt.strip():
+        stopwatch = core.Clock()
+        sequence_data = []
+        sequence = 1
+        for word in txt.split():
+            word = word.strip()
+            if word == '':
+                continue
             msg = visual.TextStim(self.win, text=word)
             msg.draw()
             self.win.flip()
-            event.waitKeys(keyList=self.wait_keys)
-            return {}
+            stopwatch.reset()
+            self.wait_for_key()
+            time = stopwatch.getTime()
+            sequence_data.append({
+                'timestamp': data.getDateStr(format='%Y-%m-%d %H:%M:%S'),
+                'word': word,
+                'time': time,
+                'sequence': sequence
+            })
+            sequence += 1
+        return sequence_data
+
+    def display_participant_dialogue(self) -> list:
+        # show participant information dialogue box
+        dlg = gui.Dlg(title="Please enter participant information")
+        dlg.addField(label='ID')
+        participant = dlg.show()
+        if participant is None:
+            core.quit()
+        return participant
