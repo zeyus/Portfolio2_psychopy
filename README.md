@@ -54,4 +54,11 @@ All project configuration lives in `./src/config`
 
 ## Scripts
 
-* `./src/app/storytime.py`: the main experiment runner, sets up psychopy, runs the experiment and saves the data
+* `./src/scripts/storytime.py`: the main experiment runner, sets up psychopy, runs the experiment and saves the data
+
+## Psychopy functionality
+
+The psychopy window drawing, timing and key events are wrapped in a helper class for reuse. The dialogue display is seperated to avoid creating a fullscreen window before the dialogue has been shown and completed. These files are in `./src/app`
+
+* `psy.py`: This is the main helper/wrapper class. Requires some config options that are passed in to the constructor
+* `psyparticipant.py`: Module to display the participant information dialogue box pre-experiment
