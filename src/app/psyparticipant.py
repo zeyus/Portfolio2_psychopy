@@ -10,12 +10,16 @@ def display_participant_dialogue() -> list:
     """
     Show participant information dialogue box
     """
-
-    # Standard psychopy dialogue box
-    dlg = gui.Dlg(title="Please enter participant information")
-    dlg.addField(label='ID')
-    participant = dlg.show()
-    # Do not continue if no ID is entered
-    if participant is None:
-        core.quit()
+    participant = None
+    #pylint: disable=unsubscriptable-object
+    # Only accept the ID if it is numeric
+    while not isinstance(participant, list) or not participant[0].isnumeric():
+        #pylint: enable=unsubscriptable-object
+        # Standard psychopy dialogue box
+        dlg = gui.Dlg(title="Please enter participant information")
+        dlg.addField(label='ID (Numeric only)')
+        participant = dlg.show()
+        # Quit if cancel button on dialogue is pressed
+        if participant is None:
+            core.quit()
     return participant
